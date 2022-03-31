@@ -10,13 +10,14 @@ namespace Entities.Models
 {
     public class Receipt
     {
+        [Key]
         public int ReceiptId { get; set; }
-        [Required]
+     
         [ForeignKey("BookingId")]
         public int? BookingId { get; set; }
         public virtual Booking BookingID { get; set; }
 
-        [Required]
+     
         [ForeignKey("JourneyId")]
         public int? JourneyId { get; set; }
         public virtual JourneyCompletion JourneyID { get; set; }

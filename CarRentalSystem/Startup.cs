@@ -4,12 +4,14 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using NLog;
+using Repository;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -35,6 +37,7 @@ namespace CarRentalSystem
             services.ConfigureCors();
             services.ConfigureIISIntegration();
             services.ConfigureLoggerService();
+            services.AddDbContext<CarRentalDbContext>(options => options.UseSqlServer(this.Configuration.GetConnectionString("sqlConnection")));
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {

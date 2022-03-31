@@ -10,20 +10,21 @@ namespace Entities.Models
 {
     public class DriverReview
     {
+        [Key]
         public int ReviewId { get; set; }
         [ForeignKey("DriverId")]
 
-        [Required]
+
         public int DriverId { get; set; }
         public virtual Driver DriverID { get; set; }
 
-        [Required]
+
 
         [ForeignKey("CustomerId")]
         public int CustomerId { get; set; }
         public virtual Customer CustomerID { get; set; }
 
-        [Required]
+    
 
         [ForeignKey("CarId")]
 

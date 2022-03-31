@@ -1,4 +1,4 @@
-﻿using Contracts;
+﻿
 using LoggerService;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;

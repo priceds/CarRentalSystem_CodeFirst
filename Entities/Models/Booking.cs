@@ -14,17 +14,17 @@ namespace Entities.Models
         public int BookingId { get; set; }
 
 
-        [Required]
+     
         [ForeignKey("CustomerId")]
         public int CustomerId { get; set; }
         public virtual Customer Customer { get; set; }
 
-        [Required]
+      
         [ForeignKey("CarId")]
         public int CarId { get; set; }
         public virtual Car Car { get; set; }
 
-        [Required]
+      
         [ForeignKey("DriverId")]
         public int DriverId { get; set; }
         public virtual Driver driver { get; set; }

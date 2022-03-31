@@ -11,14 +11,15 @@ namespace Entities.Models
 {
     public class TripReview
     {
+        [Key]
         public int FeedbackId { get; set; }
 
-        [Required]
+      
         [ForeignKey("BookingId")]
         public int BookingId { get; set; }
         public virtual Booking BookingID { get; set; }
 
-        [Required]
+  
 
         [ForeignKey("CustomerId")]
         public int CustomerId { get; set; }

@@ -10,13 +10,14 @@ namespace Entities.Models
 {
     public class JourneyCompletion
     {
+        [Key]
         public int JourneyId { get; set; }
 
-        [Required]
+       
         [ForeignKey("BookingId")]
         public int? BookingId { get; set; }
         public virtual Booking BookingID { get; set; }
-        [Required]
+     
         [ForeignKey("DriverId")]
         public int? DriverId { get; set; }
         public virtual Driver DriverID { get; set; }

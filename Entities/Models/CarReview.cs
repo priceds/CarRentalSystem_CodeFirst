@@ -10,17 +10,18 @@ namespace Entities.Models
 {
     public class CarReview
     {
+        [Key]
         public int ReviewId { get; set; }
         [ForeignKey("CarId")]
-        [Required]
+      
         public int CarId { get; set; }
         public virtual Car CarID { get; set; }
-        [Required]
+    
 
         [ForeignKey("CustomerId")]
         public int CustomerId { get; set; }
         public virtual Customer CustomerID {get;set;}
-        [Required]
+     
 
         [ForeignKey("BookingId")]
         public int BookingId { get; set; }
