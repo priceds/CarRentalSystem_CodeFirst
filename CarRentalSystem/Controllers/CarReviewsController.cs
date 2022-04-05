@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Entities.Models;
 using Repository;
+using Services;
 
 namespace CarRentalSystem.Controllers
 {
@@ -14,95 +15,80 @@ namespace CarRentalSystem.Controllers
     [ApiController]
     public class CarReviewsController : ControllerBase
     {
-        private readonly CarRentalDbContext _context;
+        private readonly ICarReviewService _carReviewService;
 
-        public CarReviewsController(CarRentalDbContext context)
+        public CarReviewsController(ICarReviewService carReviewService)
         {
-            _context = context;
+            _carReviewService = carReviewService;
         }
 
-        // GET: api/CarReviews
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<CarReview>>> GetCarReviews()
+        
+        [HttpPost]
+        [Route("AddCarReview")]
+        public IActionResult AddDriverReview(CarReview review)
         {
-            return await _context.CarReviews.ToListAsync();
-        }
-
-        // GET: api/CarReviews/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<CarReview>> GetCarReview(int id)
-        {
-            var carReview = await _context.CarReviews.FindAsync(id);
-
-            if (carReview == null)
-            {
-                return NotFound();
-            }
-
-            return carReview;
-        }
-
-        // PUT: api/CarReviews/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutCarReview(int id, CarReview carReview)
-        {
-            if (id != carReview.ReviewId)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(carReview).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                return new ObjectResult(_carReviewService.AddCarReview(review));
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception ex)
             {
-                if (!CarReviewExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+
+                return null;
             }
 
-            return NoContent();
         }
-
-        // POST: api/CarReviews
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<CarReview>> PostCarReview(CarReview carReview)
+        
+        [HttpDelete]
+        [Route("DeleteCarReview/{review_id}")]
+        public IActionResult DeleteCarReview(int review_id)
         {
-            _context.CarReviews.Add(carReview);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetCarReview", new { id = carReview.ReviewId }, carReview);
-        }
-
-        // DELETE: api/CarReviews/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCarReview(int id)
-        {
-            var carReview = await _context.CarReviews.FindAsync(id);
-            if (carReview == null)
+            try
             {
-                return NotFound();
+                return new ObjectResult(_carReviewService.DeleteCarReview(review_id));
+            }
+            catch (Exception ex)
+            {
+
+                return null;
+            }
+        }
+        
+        [HttpGet]
+        [Route("GetAllCarReview")]
+        public async Task<IActionResult> GetAllDriverReview()
+        {
+            try
+            {
+                return new ObjectResult(await _carReviewService.GetAllCarReview());
+            }
+            catch (Exception ex)
+            {
+
+                return null;
+            }
+        }
+
+        
+        [HttpGet]
+        [Route("GetCarSpecificReviews")]
+        public async Task<IActionResult> GetDriverSpecificReviews(int id)
+        {
+
+            try
+            {
+                return new ObjectResult(await _carReviewService.GetCarSpecificReviews(id));
+            }
+            catch (Exception ex)
+            {
+
+                return null;
             }
 
-            _context.CarReviews.Remove(carReview);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
         }
 
-        private bool CarReviewExists(int id)
-        {
-            return _context.CarReviews.Any(e => e.ReviewId == id);
-        }
+
+
     }
 }

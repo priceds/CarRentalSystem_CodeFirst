@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Entities.Models;
 using Repository;
+using Services;
 
 namespace CarRentalSystem.Controllers
 {
@@ -14,95 +15,88 @@ namespace CarRentalSystem.Controllers
     [ApiController]
     public class CarsController : ControllerBase
     {
-        private readonly CarRentalDbContext _context;
+        private readonly ICarService _carService;
 
-        public CarsController(CarRentalDbContext context)
+        public CarsController(ICarService carService)
         {
-            _context = context;
+            _carService = carService;
         }
 
-        // GET: api/Cars
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Car>>> GetCars()
+        
+        [HttpPost]
+        [Route("AddCar")]
+        public IActionResult AddCar(Car car)
         {
-            return await _context.Cars.ToListAsync();
-        }
-
-        // GET: api/Cars/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Car>> GetCar(int id)
-        {
-            var car = await _context.Cars.FindAsync(id);
-
-            if (car == null)
+            try
             {
-                return NotFound();
+                return new ObjectResult(_carService.AddCar(car));
             }
-
-            return car;
-        }
-
-        // PUT: api/Cars/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutCar(int id, Car car)
-        {
-            if (id != car.CarId)
+            catch (Exception ex)
             {
-                return BadRequest();
+               
+                return null;
             }
-
-            _context.Entry(car).State = EntityState.Modified;
+        }
+        
+        [HttpPut]
+        [Route("UpdateCar")]
+        public IActionResult UpdateCar(Car car)
+        {
 
             try
             {
-                await _context.SaveChangesAsync();
+                return new ObjectResult(_carService.UpdateCar(car));
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception ex)
             {
-                if (!CarExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+               
+                return null;
             }
-
-            return NoContent();
         }
-
-        // POST: api/Cars
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Car>> PostCar(Car car)
+        
+        [HttpDelete]
+        [Route("DeleteCar")]
+        public IActionResult DeleteCar(int id)
         {
-            _context.Cars.Add(car);
-            await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetCar", new { id = car.CarId }, car);
-        }
-
-        // DELETE: api/Cars/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCar(int id)
-        {
-            var car = await _context.Cars.FindAsync(id);
-            if (car == null)
+            try
             {
-                return NotFound();
+                return new ObjectResult(_carService.DeleteCar(id));
             }
-
-            _context.Cars.Remove(car);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            catch (Exception ex)
+            {
+               
+                return null;
+            }
         }
-
-        private bool CarExists(int id)
+        [HttpGet]
+        [Route("GetOnlyFreeCars")]
+        public async Task<IActionResult> GetOnlyFreeCars()
         {
-            return _context.Cars.Any(e => e.CarId == id);
+            try
+            {
+                return new ObjectResult(await _carService.GetOnlyFreeCars());
+            }
+            catch (Exception ex)
+            {
+               
+                return null;
+            }
+        }
+        
+        [HttpGet]
+        [Route("GetAllCars")]
+        public async Task<IActionResult> GetAllCars()
+        {
+            try
+            {
+                return new ObjectResult(await _carService.GetAllCars());
+            }
+            catch (Exception ex)
+            {
+               
+                return null;
+            }
         }
     }
 }

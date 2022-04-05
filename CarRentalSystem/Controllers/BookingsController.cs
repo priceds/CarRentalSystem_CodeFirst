@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Entities.Models;
 using Repository;
+using Services;
 
 namespace CarRentalSystem.Controllers
 {
@@ -14,95 +15,243 @@ namespace CarRentalSystem.Controllers
     [ApiController]
     public class BookingsController : ControllerBase
     {
-        private readonly CarRentalDbContext _context;
+        private readonly IBookingService _bookingService;
 
-        public BookingsController(CarRentalDbContext context)
+        public BookingsController(IBookingService bookingService)
         {
-            _context = context;
+            _bookingService = bookingService;
         }
 
-        // GET: api/Bookings
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Booking>>> GetBookings()
+        [HttpPost]
+        [Route("AddBooking")]
+        public IActionResult AddBooking(Booking booking)
         {
-            return await _context.Bookings.ToListAsync();
-        }
-
-        // GET: api/Bookings/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Booking>> GetBooking(int id)
-        {
-            var booking = await _context.Bookings.FindAsync(id);
-
-            if (booking == null)
+            try
             {
-                return NotFound();
+                return new ObjectResult(_bookingService.AddBooking(booking));
             }
-
-            return booking;
+            catch (Exception ex)
+            {
+                
+                return null;
+            }
         }
 
-        // PUT: api/Bookings/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutBooking(int id, Booking booking)
+        
+        [HttpPut]
+        [Route("ModifyBooking")]
+        public IActionResult ModifyBooking(Booking booking)
         {
-            if (id != booking.BookingId)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(booking).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                return new ObjectResult(_bookingService.ModifyBooking(booking));
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception ex)
             {
-                if (!BookingExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                
+                return new ObjectResult("Some Error Occured");
             }
 
-            return NoContent();
+
         }
-
-        // POST: api/Bookings
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Booking>> PostBooking(Booking booking)
+        
+        [HttpDelete]
+        [Route("DeleteBooking/{id}")]
+        public IActionResult DeleteProduct(int id)
         {
-            _context.Bookings.Add(booking);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetBooking", new { id = booking.BookingId }, booking);
-        }
-
-        // DELETE: api/Bookings/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteBooking(int id)
-        {
-            var booking = await _context.Bookings.FindAsync(id);
-            if (booking == null)
+            try
             {
-                return NotFound();
+                return new ObjectResult(_bookingService.DeleteBooking(id));
+            }
+            catch (Exception ex)
+            {
+                
+                return null;
             }
 
-            _context.Bookings.Remove(booking);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
         }
-
-        private bool BookingExists(int id)
+        
+        [HttpGet]
+        [Route("GetAllBookings")]
+        public async Task<IActionResult> GetAllBookings()
         {
-            return _context.Bookings.Any(e => e.BookingId == id);
+            try
+            {
+                return new ObjectResult(await _bookingService.GetAllBookings());
+            }
+            catch (Exception ex)
+            {
+
+                
+                return null;
+            }
+
+
         }
+        
+        [HttpGet]
+        [Route("GetAllPendingBookings")]
+        public async Task<IActionResult> GetAllPendingBookings()
+        {
+            try
+            {
+                return new ObjectResult(await _bookingService.GetAllPendingBookings());
+            }
+            catch (Exception ex)
+            {
+
+                
+                return null;
+            }
+
+
+        }
+        
+        [HttpGet]
+        [Route("GetAllConfirmedBookings")]
+        public async Task<IActionResult> GetAllConfirmedBookings()
+        {
+            try
+            {
+                return new ObjectResult(await _bookingService.GetAllConfirmedBookings());
+            }
+            catch (Exception ex)
+            {
+
+                
+                return null;
+            }
+
+
+        }
+        
+        [HttpGet]
+        [Route("GetAllBookingForCustomerWithId/{id}")]
+        public async Task<IActionResult> GetAllBookingForCustomerWithId(int id)
+        {
+            try
+            {
+                return new ObjectResult(await _bookingService.GetAllBookingForCustomerWithId(id));
+            }
+            catch (Exception ex)
+            {
+
+                
+                return null;
+            }
+
+
+        }
+        
+        [HttpGet]
+        [Route("GetPastWeekBookings")]
+        public async Task<IActionResult> GetPastWeekBookings()
+        {
+            try
+            {
+                return new ObjectResult(await _bookingService.GetPastWeekBookings());
+            }
+            catch (Exception ex)
+            {
+
+                
+                return null;
+            }
+
+
+        }
+        
+        [HttpGet]
+        [Route("GetPastMonthBookings")]
+        public async Task<IActionResult> GetPastMonthBookings()
+        {
+            try
+            {
+                return new ObjectResult(await _bookingService.GetPastMonthBookings());
+            }
+            catch (Exception ex)
+            {
+
+                
+                return null;
+            }
+
+
+        }
+        
+        [HttpGet]
+        [Route("GetPastSixMonthBookings")]
+        public async Task<IActionResult> GetPastSixMonthBookings()
+        {
+            try
+            {
+                return new ObjectResult(await _bookingService.GetPastSixMonthBookings());
+            }
+            catch (Exception ex)
+            {
+
+                
+                return null;
+            }
+
+
+        }
+        
+        [HttpGet]
+        [Route("GetPastYearBookings")]
+        public async Task<IActionResult> GetPastYearBookings()
+        {
+            try
+            {
+                return new ObjectResult(await _bookingService.GetPastYearBookings());
+            }
+            catch (Exception ex)
+            {
+
+                
+                return null;
+            }
+
+
+        }
+
+        
+        [HttpGet]
+        [Route("GetAllJourneyCompletedBookings")]
+        public async Task<IActionResult> GetAllJourneyCompletedBookings()
+        {
+            try
+            {
+                return new ObjectResult(await _bookingService.GetAllJourneyCompletedBookings());
+            }
+            catch (Exception ex)
+            {
+
+                
+                return null;
+            }
+
+
+        }
+
+        
+        [HttpGet]
+        [Route("GetAllPaymentCompletedBookings")]
+        public async Task<IActionResult> GetAllPaymentCompletedBookings()
+        {
+            try
+            {
+                return new ObjectResult(await _bookingService.GetAllPaymentCompletedBookings());
+            }
+            catch (Exception ex)
+            {
+
+                
+                return null;
+            }
+
+        }
+
     }
 }

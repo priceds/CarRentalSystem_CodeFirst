@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Entities.Models;
 using Repository;
+using Services;
 
 namespace CarRentalSystem.Controllers
 {
@@ -14,95 +15,81 @@ namespace CarRentalSystem.Controllers
     [ApiController]
     public class ReceiptsController : ControllerBase
     {
-        private readonly CarRentalDbContext _context;
+        private readonly IReceiptService _receiptService;
 
-        public ReceiptsController(CarRentalDbContext context)
+        public ReceiptsController(IReceiptService receiptService)
         {
-            _context = context;
+            _receiptService = receiptService;
         }
-
-        // GET: api/Receipts
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Receipt>>> GetReceipts()
+        
+        [HttpPost]
+        [Route("AddReceipt")]
+        public IActionResult AddReceipt(Receipt receipt)
         {
-            return await _context.Receipts.ToListAsync();
-        }
-
-        // GET: api/Receipts/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Receipt>> GetReceipt(int id)
-        {
-            var receipt = await _context.Receipts.FindAsync(id);
-
-            if (receipt == null)
+            try
             {
-                return NotFound();
+                return new ObjectResult(_receiptService.AddReceipt(receipt));
+            }
+            catch (Exception ex)
+            {
+
+                
+                return null;
             }
 
-            return receipt;
         }
-
-        // PUT: api/Receipts/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutReceipt(int id, Receipt receipt)
+        
+        [HttpPut]
+        [Route("UpdateReceipt")]
+        public IActionResult UpdateReceipt(Receipt receipt)
         {
-            if (id != receipt.ReceiptId)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(receipt).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                return new ObjectResult(_receiptService.UpdateReceipt(receipt));
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception ex)
             {
-                if (!ReceiptExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+
+                
+                return null;
             }
 
-            return NoContent();
         }
-
-        // POST: api/Receipts
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Receipt>> PostReceipt(Receipt receipt)
+        
+        [HttpGet]
+        [Route("GetAllReceipts")]
+        public async Task<IActionResult> GetAllReceipts()
         {
-            _context.Receipts.Add(receipt);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetReceipt", new { id = receipt.ReceiptId }, receipt);
-        }
-
-        // DELETE: api/Receipts/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteReceipt(int id)
-        {
-            var receipt = await _context.Receipts.FindAsync(id);
-            if (receipt == null)
+            try
             {
-                return NotFound();
+                return new ObjectResult(await _receiptService.GetAllReceipts());
+            }
+            catch (Exception ex)
+            {
+
+                
+                return null;
             }
 
-            _context.Receipts.Remove(receipt);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
         }
-
-        private bool ReceiptExists(int id)
+        
+        [HttpGet]
+        [Route("GetAllReceipts/{id}")]
+        public async Task<IActionResult> GetReceiptByBookingId(int id)
         {
-            return _context.Receipts.Any(e => e.ReceiptId == id);
+            try
+            {
+                return new ObjectResult(await _receiptService.GetReceiptByBookingId(id));
+            }
+            catch (Exception ex)
+            {
+
+                
+                return null;
+            }
+
         }
+
     }
 }

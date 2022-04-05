@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Entities.Models;
 using Repository;
+using Services;
 
 namespace CarRentalSystem.Controllers
 {
@@ -14,95 +15,82 @@ namespace CarRentalSystem.Controllers
     [ApiController]
     public class JourneyCompletionsController : ControllerBase
     {
-        private readonly CarRentalDbContext _context;
+        private readonly IJourneyCompletionService _journeyCompletionService;
 
-        public JourneyCompletionsController(CarRentalDbContext context)
+        public JourneyCompletionsController(IJourneyCompletionService journeyCompletionService)
         {
-            _context = context;
+            _journeyCompletionService = journeyCompletionService;
         }
 
-        // GET: api/JourneyCompletions
+        
+        [HttpPost]
+        [Route("AddJourneyCompletion")]
+        public IActionResult AddJourneyCompletion(JourneyCompletion completion)
+        {
+            try
+            {
+                return new ObjectResult(_journeyCompletionService.AddJourneyCompletion(completion));
+            }
+            catch (Exception ex)
+            {
+
+                
+                return null;
+            }
+
+        }
+        
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<JourneyCompletion>>> GetJourneys()
+        [Route("GetAllJourneyCompletion")]
+        public async Task<IActionResult> GetAllJourneyCompletion()
         {
-            return await _context.Journeys.ToListAsync();
-        }
-
-        // GET: api/JourneyCompletions/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<JourneyCompletion>> GetJourneyCompletion(int id)
-        {
-            var journeyCompletion = await _context.Journeys.FindAsync(id);
-
-            if (journeyCompletion == null)
+            try
             {
-                return NotFound();
+                return new ObjectResult(await _journeyCompletionService.GetAllJourneyCompletion());
+            }
+            catch (Exception ex)
+            {
+
+                
+                return null;
             }
 
-            return journeyCompletion;
         }
-
-        // PUT: api/JourneyCompletions/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutJourneyCompletion(int id, JourneyCompletion journeyCompletion)
+        
+        [HttpGet]
+        [Route("GetJourneyCompletionForBookingID/{id}")]
+        public async Task<IActionResult> GetJourneyCompletionForBookingID(int id)
         {
-            if (id != journeyCompletion.JourneyId)
+            try
             {
-                return BadRequest();
+                return new ObjectResult(await _journeyCompletionService.GetJourneyCompletionForBookingID(id));
+            }
+            catch (Exception ex)
+            {
+
+                
+                return null;
             }
 
-            _context.Entry(journeyCompletion).State = EntityState.Modified;
+        }
+        
+        [HttpPut]
+        [Route("UpdateJourneyCompletion")]
+        public IActionResult UpdateJourneyCompletion(JourneyCompletion completion)
+        {
 
             try
             {
-                await _context.SaveChangesAsync();
+                return new ObjectResult(_journeyCompletionService.UpdateJourneyCompletion(completion));
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception ex)
             {
-                if (!JourneyCompletionExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+
+                
+                return null;
             }
 
-            return NoContent();
         }
 
-        // POST: api/JourneyCompletions
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<JourneyCompletion>> PostJourneyCompletion(JourneyCompletion journeyCompletion)
-        {
-            _context.Journeys.Add(journeyCompletion);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetJourneyCompletion", new { id = journeyCompletion.JourneyId }, journeyCompletion);
-        }
-
-        // DELETE: api/JourneyCompletions/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteJourneyCompletion(int id)
-        {
-            var journeyCompletion = await _context.Journeys.FindAsync(id);
-            if (journeyCompletion == null)
-            {
-                return NotFound();
-            }
-
-            _context.Journeys.Remove(journeyCompletion);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool JourneyCompletionExists(int id)
-        {
-            return _context.Journeys.Any(e => e.JourneyId == id);
-        }
     }
 }

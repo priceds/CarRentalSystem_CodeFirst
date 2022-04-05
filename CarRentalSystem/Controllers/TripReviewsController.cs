@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Entities.Models;
 using Repository;
+using Services;
 
 namespace CarRentalSystem.Controllers
 {
@@ -14,95 +15,67 @@ namespace CarRentalSystem.Controllers
     [ApiController]
     public class TripReviewsController : ControllerBase
     {
-        private readonly CarRentalDbContext _context;
+        private readonly ITripReviewService _tripReviewService;
 
-        public TripReviewsController(CarRentalDbContext context)
+        public TripReviewsController(ITripReviewService tripReviewService)
         {
-            _context = context;
+            _tripReviewService = tripReviewService;
         }
 
-        // GET: api/TripReviews
+        
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TripReview>>> GetTripReviews()
+        [Route("CreateFeedBack")]
+        public IActionResult CreateFeedBack(TripReview feedback)
         {
-            return await _context.TripReviews.ToListAsync();
-        }
-
-        // GET: api/TripReviews/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<TripReview>> GetTripReview(int id)
-        {
-            var tripReview = await _context.TripReviews.FindAsync(id);
-
-            if (tripReview == null)
-            {
-                return NotFound();
-            }
-
-            return tripReview;
-        }
-
-        // PUT: api/TripReviews/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutTripReview(int id, TripReview tripReview)
-        {
-            if (id != tripReview.FeedbackId)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(tripReview).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                return new ObjectResult(_tripReviewService.CreateFeedBack(feedback));
+
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception ex)
             {
-                if (!TripReviewExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+
+               
+                return null;
             }
 
-            return NoContent();
         }
 
-        // POST: api/TripReviews
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<TripReview>> PostTripReview(TripReview tripReview)
+        
+        [HttpGet]
+        [Route("GetAllFeedbacks")]
+        public async Task<IActionResult> GetAllFeedbacks()
         {
-            _context.TripReviews.Add(tripReview);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetTripReview", new { id = tripReview.FeedbackId }, tripReview);
-        }
-
-        // DELETE: api/TripReviews/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteTripReview(int id)
-        {
-            var tripReview = await _context.TripReviews.FindAsync(id);
-            if (tripReview == null)
+            try
             {
-                return NotFound();
+                return new ObjectResult(await _tripReviewService.GetAllTripReviews());
+
+            }
+            catch (Exception ex)
+            {
+
+               
+                return null;
             }
 
-            _context.TripReviews.Remove(tripReview);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
         }
-
-        private bool TripReviewExists(int id)
+        
+        [HttpGet]
+        [Route("GetFeedback/{booking_id}")]
+        public async Task<IActionResult> GetFeedback(int booking_id)
         {
-            return _context.TripReviews.Any(e => e.FeedbackId == id);
+            try
+            {
+                return new ObjectResult(await _tripReviewService.GetFeedback(booking_id));
+
+            }
+            catch (Exception ex)
+            {
+
+               
+                return null;
+            }
+
         }
     }
 }

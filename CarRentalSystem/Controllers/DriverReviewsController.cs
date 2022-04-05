@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Entities.Models;
 using Repository;
+using Services;
 
 namespace CarRentalSystem.Controllers
 {
@@ -14,95 +15,78 @@ namespace CarRentalSystem.Controllers
     [ApiController]
     public class DriverReviewsController : ControllerBase
     {
-        private readonly CarRentalDbContext _context;
+        private readonly IDriverReviewService _driverReviewService;
 
-        public DriverReviewsController(CarRentalDbContext context)
+        public DriverReviewsController(IDriverReviewService driverReviewService)
         {
-            _context = context;
+            _driverReviewService = driverReviewService;
         }
 
-        // GET: api/DriverReviews
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<DriverReview>>> GetDriverReviews()
+        
+        [HttpPost]
+        [Route("AddDriverReview")]
+        public IActionResult AddDriverReview(DriverReview review)
         {
-            return await _context.DriverReviews.ToListAsync();
-        }
-
-        // GET: api/DriverReviews/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<DriverReview>> GetDriverReview(int id)
-        {
-            var driverReview = await _context.DriverReviews.FindAsync(id);
-
-            if (driverReview == null)
-            {
-                return NotFound();
-            }
-
-            return driverReview;
-        }
-
-        // PUT: api/DriverReviews/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutDriverReview(int id, DriverReview driverReview)
-        {
-            if (id != driverReview.ReviewId)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(driverReview).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                return new ObjectResult(_driverReviewService.AddDriverReview(review));
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception ex)
             {
-                if (!DriverReviewExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+               
+                return null;
             }
 
-            return NoContent();
         }
-
-        // POST: api/DriverReviews
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<DriverReview>> PostDriverReview(DriverReview driverReview)
+        
+        [HttpDelete]
+        [Route("DeleteDriverReview/{review_id}")]
+        public IActionResult DeleteDriverReview(int review_id)
         {
-            _context.DriverReviews.Add(driverReview);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetDriverReview", new { id = driverReview.ReviewId }, driverReview);
-        }
-
-        // DELETE: api/DriverReviews/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteDriverReview(int id)
-        {
-            var driverReview = await _context.DriverReviews.FindAsync(id);
-            if (driverReview == null)
+            try
             {
-                return NotFound();
+                return new ObjectResult(_driverReviewService.DeleteDriverReview(review_id));
+            }
+            catch (Exception ex)
+            {
+               
+                return null;
+            }
+        }
+        
+        [HttpGet]
+        [Route("GetAllDriverReview")]
+        public async Task<IActionResult> GetAllDriverReview()
+        {
+            try
+            {
+                return new ObjectResult(await _driverReviewService.GetAllDriverReview());
+            }
+            catch (Exception ex)
+            {
+               
+                return null;
+            }
+        }
+
+        
+        [HttpGet]
+        [Route("GetDriverSpecificReviews")]
+        public async Task<IActionResult> GetDriverSpecificReviews(int id)
+        {
+
+            try
+            {
+                return new ObjectResult(await _driverReviewService.GetDriverSpecificReviews(id));
+            }
+            catch (Exception ex)
+            {
+               
+                return null;
             }
 
-            _context.DriverReviews.Remove(driverReview);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
         }
 
-        private bool DriverReviewExists(int id)
-        {
-            return _context.DriverReviews.Any(e => e.ReviewId == id);
-        }
     }
 }

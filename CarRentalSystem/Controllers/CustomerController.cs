@@ -27,11 +27,81 @@ namespace CarRentalSystem.Controllers
 
         }
 
-       
+        
+        [HttpPost]
+        [Route("AddCustomer")]
+        public IActionResult AddCustomers(Customer customer)
+        {
+            try
+            {
+                return new ObjectResult(_customerService.AddCustomer(customer));
+            }
+            catch (Exception ex)
+            {
+              
+                return null;
+            }
+
+
+        }
+
+        
+        [HttpGet]
+        [Route("GetCustomers")]
+        public async Task<IActionResult> GetCustomers()
+        {
+            try
+            {
+                return new ObjectResult(await _customerService.GetAllCustomers());
+            }
+            catch (Exception ex)
+            {
+
+              
+                return null;
+            }
+
+
+        }
+
 
         [HttpGet]
-        [Route("api/v1/GetCustomersWhoRActive")]
-        //
+        [Route("CheckIfCustomerIsValid/{email}/{password}")]
+        public async Task<IActionResult> CheckIfCustomerIsValid(string email, string password)
+        {
+            try
+            {
+                return new ObjectResult(await _customerService.CheckIfCustomerIsValid(email, password));
+            }
+            catch (Exception ex)
+            {
+              
+                return null;
+            }
+
+
+        }
+        
+        [HttpGet]
+        [Route("GetCustomer/{id}")]
+        public async Task<IActionResult> GetCustomer(int id)
+        {
+            try
+            {
+                return new ObjectResult(await _customerService.GetCustomer(id));
+            }
+            catch (Exception ex)
+            {
+
+              
+                return null;
+            }
+
+
+        }
+        
+        [HttpGet]
+        [Route("GetCustomersWhoRActive")]
         public async Task<IActionResult> GetCustomersWhoRActive()
         {
             try
@@ -41,19 +111,47 @@ namespace CarRentalSystem.Controllers
             catch (Exception ex)
             {
 
-                
+              
                 return null;
             }
 
 
         }
-        [HttpPost]
-        [Route("api/v1/AddCustomer")]
-        public IActionResult AddCustomer(Customer customer)
+        
+        [HttpPut]
+        [Route("UpdateCustomer")]
+        public IActionResult UpdateCustomer(Customer customer)
         {
-            return new ObjectResult(_customerService.AddCustomer(customer));
 
+            try
+            {
+                return new ObjectResult(_customerService.UpdateCustomer(customer));
+            }
+            catch (Exception ex)
+            {
+
+              
+                return null;
+            }
         }
+        
+        [HttpDelete]
+        [Route("DeleteCustomer/{id}")]
+        public IActionResult DeleteCustomer(int id)
+        {
+            try
+            {
+                return new ObjectResult(_customerService.DeleteCustomer(id));
+            }
+            catch (Exception ex)
+            {
+
+              
+                return null;
+            }
+        }
+
+
 
 
 

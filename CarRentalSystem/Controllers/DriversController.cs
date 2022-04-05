@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Entities.Models;
 using Repository;
+using Services;
 
 namespace CarRentalSystem.Controllers
 {
@@ -14,95 +15,104 @@ namespace CarRentalSystem.Controllers
     [ApiController]
     public class DriversController : ControllerBase
     {
-        private readonly CarRentalDbContext _context;
+        private readonly IDriverService _driverService;
 
-        public DriversController(CarRentalDbContext context)
+        public DriversController(IDriverService driverService)
         {
-            _context = context;
+            _driverService = driverService;
         }
 
-        // GET: api/Drivers
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Driver>>> GetDrivers()
+        
+        [HttpPost]
+        [Route("AddDriver")]
+        public IActionResult AddDriver(Driver driver)
         {
-            return await _context.Drivers.ToListAsync();
-        }
-
-        // GET: api/Drivers/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Driver>> GetDriver(int id)
-        {
-            var driver = await _context.Drivers.FindAsync(id);
-
-            if (driver == null)
+            try
             {
-                return NotFound();
+                return new ObjectResult(_driverService.AddDriver(driver));
             }
-
-            return driver;
-        }
-
-        // PUT: api/Drivers/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutDriver(int id, Driver driver)
-        {
-            if (id != driver.DriverId)
+            catch (Exception ex)
             {
-                return BadRequest();
+               
+                return null;
             }
-
-            _context.Entry(driver).State = EntityState.Modified;
+        }
+        
+        [HttpPut]
+        [Route("UpdateDriver")]
+        public IActionResult UpdateCar(Driver driver)
+        {
 
             try
             {
-                await _context.SaveChangesAsync();
+                return new ObjectResult(_driverService.UpdateDriver(driver));
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception ex)
             {
-                if (!DriverExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+               
+                return null;
             }
-
-            return NoContent();
         }
-
-        // POST: api/Drivers
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Driver>> PostDriver(Driver driver)
+        
+        [HttpDelete]
+        [Route("DeleteDriver")]
+        public IActionResult DeleteDriver(int id)
         {
-            _context.Drivers.Add(driver);
-            await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetDriver", new { id = driver.DriverId }, driver);
-        }
-
-        // DELETE: api/Drivers/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteDriver(int id)
-        {
-            var driver = await _context.Drivers.FindAsync(id);
-            if (driver == null)
+            try
             {
-                return NotFound();
+                return new ObjectResult(_driverService.DeleteDriver(id));
             }
-
-            _context.Drivers.Remove(driver);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            catch (Exception ex)
+            {
+               
+                return null;
+            }
+        }
+        
+        [HttpGet]
+        [Route("GetOnlyFreeDrivers")]
+        public async Task<IActionResult> GetOnlyFreeDrivers()
+        {
+            try
+            {
+                return new ObjectResult(await _driverService.GetOnlyFreeDrivers());
+            }
+            catch (Exception ex)
+            {
+               
+                return null;
+            }
+        }
+        
+        [HttpGet]
+        [Route("GetAllDrivers")]
+        public async Task<IActionResult> GetAllDrivers()
+        {
+            try
+            {
+                return new ObjectResult(await _driverService.GetAllDrivers());
+            }
+            catch (Exception ex)
+            {
+               
+                return null;
+            }
         }
 
-        private bool DriverExists(int id)
+        [HttpGet]
+        [Route("CheckIfDriverisValid/{email}/{password}")]
+        public async Task<IActionResult> CheckIfDriverisValid(string email, string password)
         {
-            return _context.Drivers.Any(e => e.DriverId == id);
+            try
+            {
+                return new ObjectResult(await _driverService.CheckIfDriverisValid(email, password));
+            }
+            catch (Exception ex)
+            {
+               
+                return null;
+            }
         }
     }
 }
