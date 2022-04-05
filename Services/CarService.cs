@@ -17,7 +17,8 @@ namespace Services
         }
         public int AddCar(Car car)
         {
-            _carRepository.AddCar(car);
+            return _carRepository.AddCar(car);
+            
         }
 
         public int DeleteCar(int id)

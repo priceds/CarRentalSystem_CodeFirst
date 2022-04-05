@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using NLog;
 using Repository;
+using Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -37,6 +38,41 @@ namespace CarRentalSystem
             services.ConfigureCors();
             services.ConfigureIISIntegration();
             services.ConfigureLoggerService();
+
+            services.AddScoped<ICustomerRepository, CustomerRepository>();
+            services.AddScoped<ICustomerService, CustomerService>();
+
+            services.AddScoped<IAdminRepository, AdminRepository>();
+            services.AddScoped<IAdminService, AdminService>();
+
+            services.AddScoped<IBookingRepository, BookingRepository>();
+            services.AddScoped<IBookingService, BookingService>();
+
+            services.AddScoped<IDriverRepository, DriverRepository>();
+            services.AddScoped<IDriverService, DriverService>();
+
+            services.AddScoped<ICarRepository, CarRespository>();
+            services.AddScoped<ICarService, CarService>();
+
+            services.AddScoped<IDriverReviewRepository, DriverReviewRepository>();
+            services.AddScoped<IDriverReviewService, DriverReviewService>();
+
+    
+
+            services.AddScoped<ICarReviewRepository, CarReviewRepository>();
+            services.AddScoped<ICarReviewService, CarReviewService>();
+
+            services.AddScoped<IDriverReviewRepository, DriverReviewRepository>();
+            services.AddScoped<IDriverReviewService, DriverReviewService>();
+
+            services.AddScoped<IJourneyCompletionRepository, JourneyCompletionRepository>();
+            services.AddScoped<IJourneyCompletionService, JourneyCompletionService>();
+
+            services.AddScoped<IReceiptRepository, ReceiptRepository>();
+            services.AddScoped<IReceiptService, ReceiptService>();
+
+            services.AddScoped<ITripReviewRepository, TripReviewRepository>();
+            services.AddScoped<ITripReviewService, TripReviewService>();
             services.AddDbContext<CarRentalDbContext>(options => options.UseSqlServer(this.Configuration.GetConnectionString("sqlConnection")));
             services.AddControllers();
             services.AddSwaggerGen(c =>
