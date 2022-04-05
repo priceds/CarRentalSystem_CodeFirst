@@ -11,7 +11,7 @@ using Services;
 
 namespace CarRentalSystem.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]")]//
     [ApiController]
     public class TripReviewsController : ControllerBase
     {
